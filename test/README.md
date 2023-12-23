@@ -24,11 +24,13 @@ This script will run with no flags set using default values. Otherwise to tune i
 
 ```
 usage: requests.py [-h] [--baseURL BASEURL] [--concurrent_requests CONCURRENT_REQUESTS]
-                   [--concurrent_input_requests CONCURRENT_INPUT_REQUESTS] [--concurrent_hello_requests CONCURRENT_HELLO_REQUESTS]
+                   [--concurrent_input_requests CONCURRENT_INPUT_REQUESTS]
+                   [--concurrent_hello_requests CONCURRENT_HELLO_REQUESTS]
                    [--concurrent_string_concat_requests CONCURRENT_STRING_CONCAT_REQUESTS]
-                   [--concurrent_cpu_requests CONCURRENT_CPU_REQUESTS] [--concurrent_consume_requests CONCURRENT_CONSUME_REQUESTS]
+                   [--concurrent_cpu_requests CONCURRENT_CPU_REQUESTS]
+                   [--concurrent_consume_requests CONCURRENT_CONSUME_REQUESTS]
                    [--concurrent_api_call_requests CONCURRENT_API_CALL_REQUESTS] [--filename FILENAME]
-                   [--summary_filename SUMMARY_FILENAME]
+                   [--filename_sm FILENAME_SM] [--summary_filename SUMMARY_FILENAME]
 
 Async HTTP Requester
 
