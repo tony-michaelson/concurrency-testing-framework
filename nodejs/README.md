@@ -1,0 +1,10 @@
+# NodeJS Server
+
+````bash
+./up.sh \
+    NUMBER_OF_PRIMES=15000 \
+    API_CALL_DELAY_MS=5000 \
+    STREAM_SIZE=1000000 \
+    STREAMING_SERVER_PORT=3030 \
+    STRING_CONCAT_SIZE=200000```
+````

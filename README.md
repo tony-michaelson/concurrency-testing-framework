@@ -1,11 +1,11 @@
 # Concurrency Testing
 
-### Quickstart
+## Quickstart
 
 - cd ./server-streaming and build a local image according to README.me in /server-streaming
 - cd ./nodejs, ./dart, or ./kotlin and ./up.sh
 
-### Layout
+## Layout
 
 Setup for each runtime environment is:
 
@@ -30,9 +30,9 @@ Setup for each runtime environment is:
 +--------------+  +--------------+  +--------------+  +--------------+  +----------------+
 ```
 
-### HTTP Endpoints
+## HTTP Endpoints
 
-#### For the four "server" type services:
+### For the four "server" type services:
 
 | PATH           | Description                                                                     | ENV Vars                                |
 | -------------- | ------------------------------------------------------------------------------- | --------------------------------------- |
@@ -44,7 +44,7 @@ Setup for each runtime environment is:
 | /api-call      | Make a GET HTTP request to the streaming_server and return the response         | STREAMING_SERVER, STREAMING_SERVER_PORT |
 | Default (404)  | Handle unknown routes with a "Not Found" response                               |                                         |
 
-#### For the "streaming" type service:
+### For the "streaming" type service:
 
 | PATH          | Description                                       | ENV Var           |
 | ------------- | ------------------------------------------------- | ----------------- |
@@ -52,7 +52,7 @@ Setup for each runtime environment is:
 | /api-call     | Simulate an API call with delayed response        | API_CALL_DELAY_MS |
 | Default (404) | Handle unknown routes with a "Not Found" response |                   |
 
-#### ENV Vars Description:
+### ENV Vars Description:
 
 | ENV Var               | Description                                       | Default Value          |
 | --------------------- | ------------------------------------------------- | ---------------------- |
@@ -63,7 +63,7 @@ Setup for each runtime environment is:
 | STREAM_SIZE           | Size of the data stream                           | 1000000                |
 | API_CALL_DELAY_MS     | Delay in milliseconds for simulating API calls    | 5000                   |
 
-### Start the Servers
+## Start the Servers
 
 From either the "nodejs", "kotlin" or "dart" folder run:
 
@@ -75,6 +75,8 @@ From either the "nodejs", "kotlin" or "dart" folder run:
     STREAMING_SERVER_PORT=3030 \
     STRING_CONCAT_SIZE=200000```
 ````
+
+## Testing
 
 from the "test" folder run:
 

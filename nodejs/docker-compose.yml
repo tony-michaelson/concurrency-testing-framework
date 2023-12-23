@@ -1,0 +1,114 @@
+version: "3"
+
+services:
+  # debugger:
+  #   image: ubuntu
+  #   hostname: ubuntu
+  #   command: sleep infinity
+  #   cpus: 1
+  #   mem_limit: 1g
+
+  server1:
+    image: node:21.5.0-slim
+    hostname: server1
+    volumes:
+      - ./src/:/app/
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - NUMBER_OF_PRIMES=${NUMBER_OF_PRIMES:-1500}
+      - STREAMING_SERVER=streaming_server
+      - STREAMING_SERVER_PORT=${STREAMING_SERVER_PORT:-3030}
+      - STRING_CONCAT_SIZE=${STRING_CONCAT_SIZE:-10000}
+    command: node /app/server.js
+    cpus: 2
+    mem_limit: 1g
+
+  server2:
+    image: node:21.5.0-slim
+    hostname: server2
+    volumes:
+      - ./src/:/app/
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - NUMBER_OF_PRIMES=${NUMBER_OF_PRIMES:-1500}
+      - STREAMING_SERVER=streaming_server
+      - STREAMING_SERVER_PORT=${STREAMING_SERVER_PORT:-3030}
+      - STRING_CONCAT_SIZE=${STRING_CONCAT_SIZE:-10000}
+    command: node /app/server.js
+    cpus: 2
+    mem_limit: 1g
+
+  server3:
+    image: node:21.5.0-slim
+    hostname: server3
+    volumes:
+      - ./src/:/app/
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+      - NUMBER_OF_PRIMES=${NUMBER_OF_PRIMES:-1500}
+      - STREAMING_SERVER=streaming_server
+      - STREAMING_SERVER_PORT=${STREAMING_SERVER_PORT:-3030}
+      - STRING_CONCAT_SIZE=${STRING_CONCAT_SIZE:-10000}
+    command: node /app/server.js
+    cpus: 2
+    mem_limit: 1g
+
+  server4:
+    image: node:21.5.0-slim
+    hostname: server4
+    volumes:
+      - ./src/:/app/
+    environment:
+      - NODE_ENV=production
+      - PORT=3004
+      - NUMBER_OF_PRIMES=${NUMBER_OF_PRIMES:-1500}
+      - STREAMING_SERVER=streaming_server
+      - STREAMING_SERVER_PORT=${STREAMING_SERVER_PORT:-3030}
+      - STRING_CONCAT_SIZE=${STRING_CONCAT_SIZE:-10000}
+    command: node /app/server.js
+    cpus: 2
+    mem_limit: 1g
+
+  streaming_server:
+    image: streaming-server
+    hostname: streaming_server
+    environment:
+      - PORT=${STREAMING_SERVER_PORT:-3030}
+      - API_CALL_DELAY_MS=${API_CALL_DELAY_MS:-5000}
+      - STREAM_SIZE=${STREAM_SIZE:-1000000}
+    cpus: 1
+    mem_limit: 1g
+
+  nginx:
+    image: nginx
+    cpus: 2
+    mem_limit: 1g
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - server1
+      - server2
+      - server3
+      - server4
+      - streaming_server
+
+  test:
+    image: node:21.5.0-slim
+    volumes:
+      - ./src/:/app/
+    environment:
+      - TEST_TARGET_HOST=nginx
+      - TEST_TARGET_PORT=3000
+      - TEST_TARGET_STREAMING_HOST=streaming_server
+      - TEST_TARGET_STREAMING_PORT=${STREAMING_SERVER_PORT:-3030}
+    command: sh -c "npm install && npm test"
+    working_dir: /app
+    cpus: 1
+    mem_limit: 512m
+    depends_on:
+      - nginx
