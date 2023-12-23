@@ -5,9 +5,11 @@ import asyncio
 import argparse
 import json
 import time
+import os
 
-# Default values
-DEFAULT_BASE_URL = "http://localhost:3000"
+hostname = os.environ.get('HOSTNAME')
+
+DEFAULT_BASE_URL = f"http://{hostname}:3000" if hostname else "http://localhost:3000"
 DEFAULT_CONCURRENT_REQUESTS = 10
 DEFAULT_FILENAME = 'input.json'
 DEFAULT_FILENAME_SM = 'input-sm.json'
