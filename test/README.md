@@ -9,7 +9,13 @@ docker build -t py_requests_tester .
 ## Run Tests
 
 ```
-docker run -it --rm --network="host" -e HOSTNAME=$(hostname) -v"$(pwd):/app/" -w /app/ py_requests_tester python3 requests.py
+docker run -it --rm \
+    --network="host" \
+    -e HOSTNAME=$(hostname) \
+    -v"$(pwd):/app/" \
+    -w /app/ \
+    py_requests_tester \
+    python3 requests.py
 ```
 
 ## Usage
