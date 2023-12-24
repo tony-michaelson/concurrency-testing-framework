@@ -20,40 +20,44 @@ docker run -it --rm \
 
 ## Usage
 
-This script will run with no flags set using default values. Otherwise to tune it check the usage screen.
+This script takes a beginning and ending number and will walk up to the ending number. For each iteration it will create requests for all the paths in the list of endpoints multiplied by the current number in the iteration.
+
+i.e. if you run this with --concurrent_requests_begin=1 and --concurrent_requests_end=5 by the 5th iteration given 7 paths in the endpoints list you will create 70 concurrent requests. You can modify the multiplier for each endpoint using an arg flag. If you set --cpu_requests=2, for example, then you will create 5 \* 2 requests in the 5th iteration.
 
 ```
-usage: requests.py [-h] [--baseURL BASEURL] [--concurrent_requests CONCURRENT_REQUESTS]
-                   [--concurrent_input_requests CONCURRENT_INPUT_REQUESTS]
-                   [--concurrent_hello_requests CONCURRENT_HELLO_REQUESTS]
-                   [--concurrent_string_concat_requests CONCURRENT_STRING_CONCAT_REQUESTS]
-                   [--concurrent_cpu_requests CONCURRENT_CPU_REQUESTS]
-                   [--concurrent_consume_requests CONCURRENT_CONSUME_REQUESTS]
-                   [--concurrent_api_call_requests CONCURRENT_API_CALL_REQUESTS] [--filename FILENAME]
-                   [--filename_sm FILENAME_SM] [--summary_filename SUMMARY_FILENAME]
+usage: requests.py [-h] [--baseURL BASEURL] [--concurrent_requests_begin CONCURRENT_REQUESTS_BEGIN]
+                   [--concurrent_requests_end CONCURRENT_REQUESTS_END] [--input_requests INPUT_REQUESTS] [--hello_requests HELLO_REQUESTS]
+                   [--string_concat_requests STRING_CONCAT_REQUESTS] [--cpu_requests CPU_REQUESTS] [--consume_requests CONSUME_REQUESTS]
+                   [--api_call_requests API_CALL_REQUESTS] [--json_input_file JSON_INPUT_FILE] [--json_input_file_sm JSON_INPUT_FILE_SM]
+                   [--report_filename REPORT_FILENAME] [--chart_data_filename CHART_DATA_FILENAME]
 
 Async HTTP Requester
 
 options:
   -h, --help            show this help message and exit
   --baseURL BASEURL     Base URL
-  --concurrent_requests CONCURRENT_REQUESTS
-                        Number of concurrent requests
-  --concurrent_input_requests CONCURRENT_INPUT_REQUESTS
-                        Set concurrent requests for /input
-  --concurrent_hello_requests CONCURRENT_HELLO_REQUESTS
-                        Set concurrent requests for /hello
-  --concurrent_string_concat_requests CONCURRENT_STRING_CONCAT_REQUESTS
-                        Set concurrent requests for /string-concat
-  --concurrent_cpu_requests CONCURRENT_CPU_REQUESTS
-                        Set concurrent requests for /cpu
-  --concurrent_consume_requests CONCURRENT_CONSUME_REQUESTS
-                        Set concurrent requests for /consume
-  --concurrent_api_call_requests CONCURRENT_API_CALL_REQUESTS
-                        Set concurrent requests for /api-call
-  --filename FILENAME   filename for large JSON input
-  --filename_sm FILENAME_SM
+  --concurrent_requests_begin CONCURRENT_REQUESTS_BEGIN
+                        Number of concurrent requests to begin with
+  --concurrent_requests_end CONCURRENT_REQUESTS_END
+                        Number of concurrent requests to end with
+  --input_requests INPUT_REQUESTS
+                        Set multiplier of concurrent requests for /input
+  --hello_requests HELLO_REQUESTS
+                        Set multiplier of concurrent requests for /hello
+  --string_concat_requests STRING_CONCAT_REQUESTS
+                        Set multiplier of concurrent requests for /string-concat
+  --cpu_requests CPU_REQUESTS
+                        Set multiplier of concurrent requests for /cpu
+  --consume_requests CONSUME_REQUESTS
+                        Set multiplier of concurrent requests for /consume
+  --api_call_requests API_CALL_REQUESTS
+                        Set multiplier of concurrent requests for /api-call
+  --json_input_file JSON_INPUT_FILE
+                        filename for large JSON input
+  --json_input_file_sm JSON_INPUT_FILE_SM
                         filename for small JSON input
-  --summary_filename SUMMARY_FILENAME
-                        Summary Filename
+  --report_filename REPORT_FILENAME
+                        Filename to write report to
+  --chart_data_filename CHART_DATA_FILENAME
+                        Filename to write chart data to
 ```
