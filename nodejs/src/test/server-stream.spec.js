@@ -3,6 +3,7 @@ const assert = require("assert");
 
 const HOSTNAME = process.env.TEST_TARGET_STREAMING_HOST || "localhost";
 const PORT = process.env.TEST_TARGET_STREAMING_PORT || 3030;
+const STREAM_SIZE = process.env.STREAM_SIZE || 1000000;
 
 // Helper function to make HTTP GET requests
 function makeHttpGetRequest(path, callback) {
@@ -38,7 +39,7 @@ describe("HTTP Streaming Server Tests", () => {
 
       makeHttpGetRequest("/stream", (statusCode, data, error) => {
         assert.strictEqual(statusCode, 200);
-        assert.strictEqual(data.length > 1, true);
+        assert.strictEqual(data.length, calculateStreamSize());
         assert.strictEqual(error, null);
         done();
       });
@@ -59,3 +60,12 @@ describe("HTTP Streaming Server Tests", () => {
     });
   });
 });
+
+function calculateStreamSize() {
+  let size = 0;
+  for (let count = 0; count <= STREAM_SIZE; count++) {
+    data = "data stream " + count + "\n";
+    size += data.length;
+  }
+  return size;
+}
