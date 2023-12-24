@@ -102,6 +102,9 @@ services:
     volumes:
       - ./src/:/app/
     environment:
+      - NUMBER_OF_PRIMES=${NUMBER_OF_PRIMES:-1500}
+      - STRING_CONCAT_SIZE=${STRING_CONCAT_SIZE:-10000}
+      - STREAM_SIZE=${STREAM_SIZE:-1000000}
       - TEST_TARGET_HOST=nginx
       - TEST_TARGET_PORT=3000
       - TEST_TARGET_STREAMING_HOST=streaming_server
