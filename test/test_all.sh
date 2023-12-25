@@ -7,7 +7,7 @@ then
     exit 1
 fi
 
-FILE_NAME="${SYSTEM_NAM}_all"
+FILE_NAME="${SYSTEM_NAME}_all"
 docker run -it --rm \
     --network="host" \
     -e HOSTNAME=localhost \
@@ -36,7 +36,7 @@ docker run -it --rm \
     --input_requests_lg=0 \
     --concurrent_requests_end=20
 
-FILE_NAME="${SYSTEM_NAM}_no_lg_input_no_cpu"
+FILE_NAME="${SYSTEM_NAME}_no_lg_input_no_cpu"
 docker run -it --rm \
     --network="host" \
     -e HOSTNAME=localhost \
