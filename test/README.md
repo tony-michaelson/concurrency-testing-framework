@@ -11,7 +11,7 @@ docker build -t py_requests_tester .
 ```
 docker run -it --rm \
     --network="host" \
-    -e HOSTNAME=$(hostname) \
+    -e HOSTNAME=localhost \
     -v"$(pwd):/app/" \
     -w /app/ \
     py_requests_tester \

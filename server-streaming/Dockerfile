@@ -1,8 +1,6 @@
-FROM composer
+FROM node:21.5.0-slim
 
-RUN docker-php-ext-install pcntl
-
-WORKDIR /app
 COPY . /app
+WORKDIR /app
 
-CMD ["bash", "start.sh"]
+CMD ["node", "streaming-server.js"]

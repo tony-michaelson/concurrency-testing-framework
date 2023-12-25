@@ -1,4 +1,4 @@
-# PHP Streaming Server
+# Node File Streaming Server
 
 #### For the "streaming" type service:
 
@@ -16,8 +16,8 @@
 
 ### Build Local Container
 
-You need to build a local container so nodejs, dart, and kotlin docker-compose setups can use this server in their architecture.
+You need to build a local container so the other docker-compose setups can use this server in their architecture.
 
 ```
-docker build -t streaming-server .
+./build.sh
 ```

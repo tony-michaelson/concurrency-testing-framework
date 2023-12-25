@@ -1,0 +1,6 @@
+name: 'dart_research'
+dependencies:
+  http: ^1.1.2
+  isolate: ^2.1.1
+environment:
+  sdk: '^3.2.0'

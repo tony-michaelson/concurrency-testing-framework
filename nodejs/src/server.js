@@ -130,7 +130,7 @@ function walkObject(obj, depth = 0) {
       elementCount++;
 
       if (typeof value === "object" && !Array.isArray(value)) {
-        elementCount += walkObject(value, depth + 1);
+        elementCount += walkObject(value, depth + 1); // todo; tco optimize
       }
     }
   }

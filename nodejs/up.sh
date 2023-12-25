@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export NUMBER_OF_PRIMES=${NUMBER_OF_PRIMES:-1500}
 export STREAMING_SERVER_PORT=${STREAMING_SERVER_PORT:-3030}
