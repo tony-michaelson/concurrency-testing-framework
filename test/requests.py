@@ -91,7 +91,7 @@ endpoint_data = {
         "color": "purple",
         "method": "GET"
     },
-    "/consume": {
+    "/consume#18mb": {
         "name": "Consume Api FileStream",
         "requests": args.consume_requests,
         "post_data": None,
