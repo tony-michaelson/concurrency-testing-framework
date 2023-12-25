@@ -26,10 +26,12 @@ i.e. if you run this with --concurrent_requests_begin=1 and --concurrent_request
 
 ```
 usage: requests.py [-h] [--baseURL BASEURL] [--concurrent_requests_begin CONCURRENT_REQUESTS_BEGIN]
-                   [--concurrent_requests_end CONCURRENT_REQUESTS_END] [--input_requests INPUT_REQUESTS] [--hello_requests HELLO_REQUESTS]
-                   [--string_concat_requests STRING_CONCAT_REQUESTS] [--cpu_requests CPU_REQUESTS] [--consume_requests CONSUME_REQUESTS]
-                   [--api_call_requests API_CALL_REQUESTS] [--json_input_file JSON_INPUT_FILE] [--json_input_file_sm JSON_INPUT_FILE_SM]
-                   [--report_filename REPORT_FILENAME] [--chart_data_filename CHART_DATA_FILENAME]
+                   [--concurrent_requests_end CONCURRENT_REQUESTS_END] [--input_requests_lg INPUT_REQUESTS_LG]
+                   [--input_requests_sm INPUT_REQUESTS_SM] [--hello_requests HELLO_REQUESTS]
+                   [--string_concat_requests STRING_CONCAT_REQUESTS] [--cpu_requests CPU_REQUESTS]
+                   [--consume_requests CONSUME_REQUESTS] [--api_call_requests API_CALL_REQUESTS] [--json_input_file JSON_INPUT_FILE]
+                   [--json_input_file_sm JSON_INPUT_FILE_SM] [--report_filename REPORT_FILENAME]
+                   [--chart_data_filename CHART_DATA_FILENAME] [--chart_rps_data_filename CHART_RPS_DATA_FILENAME]
 
 Async HTTP Requester
 
@@ -40,8 +42,10 @@ options:
                         Number of concurrent requests to begin with
   --concurrent_requests_end CONCURRENT_REQUESTS_END
                         Number of concurrent requests to end with
-  --input_requests INPUT_REQUESTS
-                        Set multiplier of concurrent requests for /input
+  --input_requests_lg INPUT_REQUESTS_LG
+                        Set multiplier of concurrent requests for /input#37mb
+  --input_requests_sm INPUT_REQUESTS_SM
+                        Set multiplier of concurrent requests for /input#114B
   --hello_requests HELLO_REQUESTS
                         Set multiplier of concurrent requests for /hello
   --string_concat_requests STRING_CONCAT_REQUESTS
@@ -60,4 +64,6 @@ options:
                         Filename to write report to
   --chart_data_filename CHART_DATA_FILENAME
                         Filename to write chart data to
+  --chart_rps_data_filename CHART_RPS_DATA_FILENAME
+                        Filename to write chart rps data to
 ```

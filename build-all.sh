@@ -10,3 +10,7 @@ cd -
 
 cd ./dart/
 ./build.sh
+cd -
+
+cd ./test/
+./build.sh
