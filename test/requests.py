@@ -6,6 +6,7 @@ import argparse
 import json
 import time
 import os
+import copy
 
 hostname = os.environ.get('HOSTNAME')
 
@@ -22,13 +23,13 @@ parser.add_argument("--baseURL", type=str, default=DEFAULT_BASE_URL, help="Base 
 parser.add_argument("--concurrent_requests_begin", type=int, default=1, help="Number of concurrent requests to begin with")
 parser.add_argument("--concurrent_requests_end", type=int, default=DEFAULT_CONCURRENT_REQUESTS, help="Number of concurrent requests to end with")
 
-parser.add_argument("--input_requests_lg", type=int, default=0, help="Set multiplier of concurrent requests for /input#37mb")
-parser.add_argument("--input_requests_sm", type=int, default=0, help="Set multiplier of concurrent requests for /input#114B")
-parser.add_argument("--hello_requests", type=int, default=0, help="Set multiplier of concurrent requests for /hello")
-parser.add_argument("--string_concat_requests", type=int, default=0, help="Set multiplier of concurrent requests for /string-concat")
-parser.add_argument("--cpu_requests", type=int, default=0, help="Set multiplier of concurrent requests for /cpu")
-parser.add_argument("--consume_requests", type=int, default=0, help="Set multiplier of concurrent requests for /consume")
-parser.add_argument("--api_call_requests", type=int, default=0, help="Set multiplier of concurrent requests for /api-call")
+parser.add_argument("--input_requests_lg", type=int, default=1, help="Set multiplier of concurrent requests for /input#37mb")
+parser.add_argument("--input_requests_sm", type=int, default=1, help="Set multiplier of concurrent requests for /input#114B")
+parser.add_argument("--hello_requests", type=int, default=1, help="Set multiplier of concurrent requests for /hello")
+parser.add_argument("--string_concat_requests", type=int, default=1, help="Set multiplier of concurrent requests for /string-concat")
+parser.add_argument("--cpu_requests", type=int, default=1, help="Set multiplier of concurrent requests for /cpu")
+parser.add_argument("--consume_requests", type=int, default=1, help="Set multiplier of concurrent requests for /consume")
+parser.add_argument("--api_call_requests", type=int, default=1, help="Set multiplier of concurrent requests for /api-call")
 
 parser.add_argument("--json_input_file", type=str, default=DEFAULT_FILENAME, help="filename for large JSON input")
 parser.add_argument("--json_input_file_sm", type=str, default=DEFAULT_FILENAME_SM, help="filename for small JSON input")
@@ -54,15 +55,57 @@ def read_json(filename):
 post_data = read_json(filename)
 post_data_sm = read_json(filename_sm)
 
-endpoints = [
-    ("/input#37mb", args.input_requests_lg or 1, post_data, "black"),
-    ("/input#114B", args.input_requests_sm or 1, post_data_sm, "gray"),
-    ("/hello", args.hello_requests or 1, None, "blue"),
-    ("/string-concat", args.string_concat_requests | 1, None, "red"),
-    ("/cpu", args.cpu_requests or 1, None, "purple"),
-    ("/consume", args.consume_requests or 1, None, "green"),
-    ("/api-call", args.api_call_requests or 1, None, "orange"),
-]
+endpoint_data = {
+    "/input#37mb": {
+        "name": "37mb Json Input",
+        "requests": args.input_requests_lg,
+        "post_data": post_data,
+        "color": "black",
+        "method": "POST"
+    },
+    "/input#114B": {
+        "name": "114B Json Input",
+        "requests": args.input_requests_sm,
+        "post_data": post_data_sm,
+        "color": "gray",
+        "method": "POST"
+    },
+    "/hello": {
+        "name": "Hello",
+        "requests": args.hello_requests,
+        "post_data": None,
+        "color": "blue",
+        "method": "GET"
+    },
+    "/string-concat": {
+        "name": "String Concat",
+        "requests": args.string_concat_requests,
+        "post_data": None,
+        "color": "red",
+        "method": "GET"
+    },
+    "/cpu": {
+        "name": "CPU HAMMER",
+        "requests": args.cpu_requests,
+        "post_data": None,
+        "color": "purple",
+        "method": "GET"
+    },
+    "/consume": {
+        "name": "Consume Api FileStream",
+        "requests": args.consume_requests,
+        "post_data": None,
+        "color": "green",
+        "method": "GET"
+    },
+    "/api-call": {
+        "name": "Api Call",
+        "requests": args.api_call_requests,
+        "post_data": None,
+        "color": "orange",
+        "method": "GET"
+    }
+}
     
 async def make_request(session, url, data, method="GET"):
     start_time = time.time()
@@ -73,37 +116,45 @@ async def make_request(session, url, data, method="GET"):
     elapsed_time_ms = (end_time - start_time) * 1000.0
     return url, elapsed_time_ms, response_code
 
-async def requests(concurrent_requests):
-    main_start_time = time.time()
+def process_response(path, elapsed_time_ms, response_code, summary={}):
+    print(f"{path},{elapsed_time_ms:.2f},{response_code}")
+
+    total_requests = summary.get(path, {}).get("total_requests", 0) + 1
+    summary[path] = {
+        "total_requests": total_requests,
+        "total_time": summary.get(path, {}).get("total_time", 0) + elapsed_time_ms,
+        "longest_elapsed_time_ms": max(elapsed_time_ms, summary.get(path, {}).get("longest_elapsed_time_ms", 0)),
+        "shortest_elapsed_time_ms": min(elapsed_time_ms, summary.get(path, {}).get("shortest_elapsed_time_ms", 999999999)),
+        "average_elapsed_time_ms": (summary.get(path, {}).get("average_elapsed_time_ms", 0) * (total_requests - 1) + elapsed_time_ms) / total_requests,
+    }
+    return summary
+
+async def requests(concurrent_requests, endpoints):
     async with aiohttp.ClientSession() as session:
-        tasks = []
-        
-        data = None
-        for endpoint, num_requests, post_data, color in endpoints:
-            url = f"{baseURL}{endpoint}"
-            if endpoint.startswith("/input"):
-                data = post_data
-                method = "POST"
-            else:
-                data = None
-                method = "GET"
-            
-            for _ in range(num_requests * concurrent_requests):
-                task = make_request(session, url, data, method)
+        print(f"Concurrent Requests: {concurrent_requests}")
+        for path, settings in endpoints.items():
+            if endpoints[path]["requests"] > 0:
+                endpoints[path]["requests"] = settings["requests"] * concurrent_requests
+
+        def _helper(current_batch, session):
+            tasks = []
+            next_batch = []
+
+            while current_batch or next_batch:
+                if not current_batch:
+                    current_batch, next_batch = next_batch, []
+                path, settings = current_batch.pop(0)
+                task = make_request(session, f"{baseURL}{path}", settings["post_data"], settings["method"])
+                settings["requests"] -= 1
                 tasks.append(task)
+                if settings["requests"] > 0:
+                    next_batch.append((path, settings))
 
-        def process_response(path, elapsed_time_ms, response_code, summary={}):
-            print(f"{path},{elapsed_time_ms:.2f},{response_code}")
+            return tasks
 
-            total_requests = summary.get(path, {}).get("total_requests", 0) + 1
-            summary[path] = {
-                "total_requests": total_requests,
-                "total_time": summary.get(path, {}).get("total_time", 0) + elapsed_time_ms,
-                "longest_elapsed_time_ms": max(elapsed_time_ms, summary.get(path, {}).get("longest_elapsed_time_ms", 0)),
-                "shortest_elapsed_time_ms": min(elapsed_time_ms, summary.get(path, {}).get("shortest_elapsed_time_ms", 999999999)),
-                "average_elapsed_time_ms": (summary.get(path, {}).get("average_elapsed_time_ms", 0) * (total_requests - 1) + elapsed_time_ms) / total_requests,
-            }
-            return summary
+        main_start_time = time.time()
+        endpoints_copy = copy.deepcopy(endpoints)
+        tasks = _helper(list(endpoints_copy.items()), session)
 
         print(f"Endpoint,Time (ms),Response Code")
         summary = {}
@@ -121,12 +172,6 @@ async def requests(concurrent_requests):
             "results": summary,
         }
     
-def get_color_for_path(path, endpoints):
-    for endpoint_info in endpoints:
-        if endpoint_info[0] == path:
-            return endpoint_info[3]
-    return "unknown"
-
 def sort_datasets_alphabetically(chart_data):
     chart_data["datasets"] = sorted(chart_data["datasets"], key=lambda x: x["label"])
     return chart_data
@@ -151,7 +196,7 @@ def generate_chart_data(test_batches_list, rps_data=False):
                     "data": [
                         requests_per_second if rps_data else avg_time_per_request
                     ],
-                    "borderColor": get_color_for_path('/'+endpoint, endpoints),
+                    "borderColor": endpoint_data['/'+endpoint]["color"],
                     "fill": False
                 }
             else:
@@ -167,7 +212,7 @@ def generate_chart_data(test_batches_list, rps_data=False):
 async def main():
     master_report = []
     for concurrent_requests in range(concurrent_requests_begin, concurrent_requests_end + 1):
-       report = await requests(concurrent_requests)
+       report = await requests(concurrent_requests, copy.deepcopy(endpoint_data))
        master_report.append(report)
 
     chart_data = generate_chart_data(master_report)
