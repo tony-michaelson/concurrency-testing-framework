@@ -8,8 +8,9 @@
 
 ## Quickstart
 
-- cd ./server-streaming and build a local image according to README.me in /server-streaming
+- ./build-all.sh
 - cd ./nodejs, ./dart, or ./kotlin and ./up.sh
+- see [test/README.me](./test/README.md) for how to run request tests
 
 ## Layout
 
