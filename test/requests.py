@@ -132,9 +132,9 @@ def process_response(path, elapsed_time_ms, response_code, summary={}):
 async def requests(concurrent_requests, endpoints):
     async with aiohttp.ClientSession() as session:
         print(f"Concurrent Requests: {concurrent_requests}")
-        for path, settings in endpoints.items():
-            if endpoints[path]["requests"] > 0:
-                endpoints[path]["requests"] = settings["requests"] * concurrent_requests
+        for endpoint_path, endpoint_settings in endpoints.items():
+            if endpoint_settings["requests"] > 0:
+                endpoint_settings["requests"] = endpoint_settings["requests"] * concurrent_requests
 
         def _helper(current_batch, session):
             tasks = []
@@ -144,9 +144,10 @@ async def requests(concurrent_requests, endpoints):
                 if not current_batch:
                     current_batch, next_batch = next_batch, []
                 path, settings = current_batch.pop(0)
-                task = make_request(session, f"{baseURL}{path}", settings["post_data"], settings["method"])
-                settings["requests"] -= 1
-                tasks.append(task)
+                if settings["requests"] > 0:
+                    task = make_request(session, f"{baseURL}{path}", settings["post_data"], settings["method"])
+                    settings["requests"] -= 1
+                    tasks.append(task)
                 if settings["requests"] > 0:
                     next_batch.append((path, settings))
 
