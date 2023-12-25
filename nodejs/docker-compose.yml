@@ -1,15 +1,16 @@
 version: "3"
 
 services:
-  # debugger:
-  #   image: ubuntu
-  #   hostname: ubuntu
-  #   command: sleep infinity
-  #   cpus: 1
-  #   mem_limit: 1g
+  debugger:
+    image: ubuntu
+    hostname: ubuntu
+    command: sleep infinity
+    cpus: 1
+    mem_limit: 1g
+    network_mode: host
 
   server1:
-    image: node:21.5.0-slim
+    image: ${JS_IMAGE:-node:21.5.0-slim}
     hostname: server1
     volumes:
       - ./src/:/app/
@@ -17,16 +18,16 @@ services:
       - NODE_ENV=production
       - PORT=3001
       - NUMBER_OF_PRIMES=${NUMBER_OF_PRIMES:-1500}
-      - STREAMING_SERVER=localhost
+      - STREAMING_SERVER=127.0.0.1
       - STREAMING_SERVER_PORT=${STREAMING_SERVER_PORT:-3030}
       - STRING_CONCAT_SIZE=${STRING_CONCAT_SIZE:-10000}
-    command: node /app/server.js
+    command: ${JS_START_CMD:-node /app/server.js}
     cpus: 4
     mem_limit: 1g
     network_mode: host
 
   server2:
-    image: node:21.5.0-slim
+    image: ${JS_IMAGE:-node:21.5.0-slim}
     hostname: server2
     volumes:
       - ./src/:/app/
@@ -34,16 +35,16 @@ services:
       - NODE_ENV=production
       - PORT=3002
       - NUMBER_OF_PRIMES=${NUMBER_OF_PRIMES:-1500}
-      - STREAMING_SERVER=localhost
+      - STREAMING_SERVER=127.0.0.1
       - STREAMING_SERVER_PORT=${STREAMING_SERVER_PORT:-3030}
       - STRING_CONCAT_SIZE=${STRING_CONCAT_SIZE:-10000}
-    command: node /app/server.js
+    command: ${JS_START_CMD:-node /app/server.js}
     cpus: 4
     mem_limit: 1g
     network_mode: host
 
   server3:
-    image: node:21.5.0-slim
+    image: ${JS_IMAGE:-node:21.5.0-slim}
     hostname: server3
     volumes:
       - ./src/:/app/
@@ -51,16 +52,16 @@ services:
       - NODE_ENV=production
       - PORT=3003
       - NUMBER_OF_PRIMES=${NUMBER_OF_PRIMES:-1500}
-      - STREAMING_SERVER=localhost
+      - STREAMING_SERVER=127.0.0.1
       - STREAMING_SERVER_PORT=${STREAMING_SERVER_PORT:-3030}
       - STRING_CONCAT_SIZE=${STRING_CONCAT_SIZE:-10000}
-    command: node /app/server.js
+    command: ${JS_START_CMD:-node /app/server.js}
     cpus: 4
     mem_limit: 1g
     network_mode: host
 
   server4:
-    image: node:21.5.0-slim
+    image: ${JS_IMAGE:-node:21.5.0-slim}
     hostname: server4
     volumes:
       - ./src/:/app/
@@ -68,10 +69,10 @@ services:
       - NODE_ENV=production
       - PORT=3004
       - NUMBER_OF_PRIMES=${NUMBER_OF_PRIMES:-1500}
-      - STREAMING_SERVER=localhost
+      - STREAMING_SERVER=127.0.0.1
       - STREAMING_SERVER_PORT=${STREAMING_SERVER_PORT:-3030}
       - STRING_CONCAT_SIZE=${STRING_CONCAT_SIZE:-10000}
-    command: node /app/server.js
+    command: ${JS_START_CMD:-node /app/server.js}
     cpus: 4
     mem_limit: 1g
     network_mode: host
