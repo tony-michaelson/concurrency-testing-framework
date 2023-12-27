@@ -34,14 +34,14 @@ if (isMainThread) {
           res.end(`Error: ${error.message}`);
         }
       });
-    } else if (
-      pathname === "/hello" ||
-      pathname === "/string-concat" ||
-      pathname === "/cpu" ||
-      pathname === "/consume" ||
-      pathname === "/api-call"
-    ) {
+    } else if (pathname === "/string-concat" || pathname === "/cpu") {
       setupWorker(req, res, pathname);
+    } else if (pathname === "/consume") {
+      handleConsumeRequest(req, res);
+    } else if (pathname === "/hello") {
+      handleHelloRequest(req, res);
+    } else if (pathname === "/api-call") {
+      handleAPICallRequest(req, res);
     } else {
       res.writeHead(404, { "Content-Type": "text/plain" });
       res.end("Not Found");
@@ -75,9 +75,7 @@ function setupWorker(req, res, pathname) {
 async function handleRequestWithWorker(workerData) {
   const { url } = workerData;
 
-  if (url === "/hello") {
-    parentPort.postMessage("Hello!");
-  } else if (url === "/string-concat") {
+  if (url === "/string-concat") {
     const result = performStringOperation();
     parentPort.postMessage(result);
   } else if (url === "/cpu") {
@@ -87,40 +85,58 @@ async function handleRequestWithWorker(workerData) {
     } catch (error) {
       parentPort.postMessage(`Error: ${error.message}`);
     }
-  } else if (url === "/consume") {
-    const options = {
-      hostname: streamingServer,
-      port: streamingServerPort,
-      path: "/stream",
-      method: "GET",
-    };
-
-    const request = http.request(options, (response) => {
-      let data = "";
-
-      response.on("data", (chunk) => {
-        data += chunk;
-      });
-
-      response.on("end", () => {
-        parentPort.postMessage(data);
-      });
-    });
-
-    request.on("error", (error) => {
-      parentPort.postMessage(`Error: ${error.message}`);
-    });
-
-    request.end();
-  } else if (url === "/api-call") {
-    try {
-      const response = await simulateAPICall();
-      parentPort.postMessage(response);
-    } catch (error) {
-      parentPort.postMessage(`Error: ${error.message}`);
-    }
   }
 }
+
+function handleConsumeRequest(req, res) {
+  const options = {
+    hostname: streamingServer,
+    port: streamingServerPort,
+    path: "/stream",
+    method: "GET",
+  };
+
+  const request = http.request(options, (response) => {
+    let data = "";
+
+    response.on("data", (chunk) => {
+      data += chunk;
+    });
+
+    response.on("end", () => {
+      res.writeHead(200, { "Content-Type": "text/plain" });
+      res.end(data);
+    });
+  });
+
+  request.on("error", (error) => {
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end(`Error: ${error.message}`);
+  });
+
+  request.end();
+}
+
+function handleHelloRequest(req, res) {
+  // Handle the "/hello" route logic in the main thread
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Hello!");
+}
+
+function handleAPICallRequest(req, res) {
+  // Handle the "/api-call" route logic in the main thread
+  simulateAPICall()
+    .then((response) => {
+      res.writeHead(200, { "Content-Type": "text/plain" });
+      res.end(response);
+    })
+    .catch((error) => {
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end(`Error: ${error.message}`);
+    });
+}
+
+// Rest of the functions remain the same
 
 function walkObject(obj, depth = 0) {
   let elementCount = 0;
