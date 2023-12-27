@@ -6,4 +6,4 @@ COPY . /app
 RUN gradle buildFatJar
 RUN mv build/libs/ktor-sample-all.jar server.jar
 
-CMD ["java", "-jar", "server.jar"]
+CMD ["java", "-Xmx900m", "-jar", "server.jar"]
