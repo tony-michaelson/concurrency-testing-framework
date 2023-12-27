@@ -8,13 +8,15 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import java.net.URL
 
 val stringConcatSize = System.getenv()["STRING_CONCAT_SIZE"]?.toInt() ?: 1000
 val hostname = System.getenv("STREAMING_SERVER") ?: "localhost"
 val portStr = System.getenv()["STREAMING_SERVER_PORT"]?.toInt() ?: 3030
 val numberOfPrimes = System.getenv()["NUMBER_OF_PRIMES"]?.toInt() ?: 1500
+val json = Json { allowTrailingComma = true }
 
 fun Application.configureRouting() {
     routing {
@@ -42,8 +44,9 @@ fun Application.configureRouting() {
         }
         post("/input") {
             val inputData = call.receiveText()
-            val size = async { countJsonElements(inputData) }.await()
-            call.respondText("Processed Input: " + size + " elements")
+            val jsonObject = json.decodeFromString<JsonObject>(inputData)
+            val size = async { walkObject(jsonObject) }.await()
+            call.respondText("Processed Input: $size elements")
         }
     }
 }
@@ -62,38 +65,25 @@ suspend fun consumeExternalApi(url: String): String {
     }
 }
 
-suspend fun countJsonElements(jsonString: String): Int {
-    val jsonObject = JSONObject(jsonString)
-    return countJsonElementsRecursive(jsonObject)
-}
+tailrec fun walkObject(obj: Any, stack: ArrayDeque<Map<*, *>> = ArrayDeque(), elementCount: Int = 0): Int {
+    if (obj is Map<*, *>) {
+        if (stack.isEmpty()) stack.add(obj)
 
-fun countJsonElementsRecursive(jsonObj: JSONObject): Int {
-    return countJsonElementsRecursiveHelper(jsonObj.keys().iterator(), jsonObj)
-}
+        var count = elementCount
 
-private tailrec fun countJsonElementsRecursiveHelper(keysIterator: Iterator<String>, jsonObj: JSONObject, count: Int = 0): Int {
-    if (!keysIterator.hasNext()) {
-        return count
-    }
+        while (stack.isNotEmpty()) {
+            val currentMap = stack.removeLast()
+            count += currentMap.size
 
-    val key = keysIterator.next()
-    val value = jsonObj[key]
-
-    val updatedCount = count + 1
-
-    val totalCount = when (value) {
-        is JSONObject -> countJsonElementsRecursiveHelper(value.keys().iterator(), value, updatedCount)
-        is List<*> -> {
-            var listCount = updatedCount
-            for (item in value) {
-                if (item is JSONObject) {
-                    listCount = countJsonElementsRecursiveHelper(item.keys().iterator(), item, listCount)
+            for ((_, value) in currentMap) {
+                if (value is Map<*, *>) {
+                    stack.add(value)
                 }
             }
-            listCount
         }
-        else -> updatedCount
-    }
 
-    return countJsonElementsRecursiveHelper(keysIterator, jsonObj, totalCount)
+        return count
+    } else {
+        return elementCount
+    }
 }
