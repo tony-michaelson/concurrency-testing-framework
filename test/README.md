@@ -28,10 +28,10 @@ i.e. if you run this with --concurrent_requests_begin=1 and --concurrent_request
 usage: requests.py [-h] [--baseURL BASEURL] [--concurrent_requests_begin CONCURRENT_REQUESTS_BEGIN]
                    [--concurrent_requests_end CONCURRENT_REQUESTS_END] [--input_requests_lg INPUT_REQUESTS_LG]
                    [--input_requests_sm INPUT_REQUESTS_SM] [--hello_requests HELLO_REQUESTS]
-                   [--string_concat_requests STRING_CONCAT_REQUESTS] [--cpu_requests CPU_REQUESTS]
-                   [--consume_requests CONSUME_REQUESTS] [--api_call_requests API_CALL_REQUESTS] [--json_input_file JSON_INPUT_FILE]
-                   [--json_input_file_sm JSON_INPUT_FILE_SM] [--report_filename REPORT_FILENAME]
-                   [--chart_data_filename CHART_DATA_FILENAME] [--chart_rps_data_filename CHART_RPS_DATA_FILENAME]
+                   [--string_concat_requests STRING_CONCAT_REQUESTS] [--cpu_requests CPU_REQUESTS] [--consume_requests CONSUME_REQUESTS]
+                   [--api_call_requests API_CALL_REQUESTS] [--json_input_file JSON_INPUT_FILE] [--json_input_file_sm JSON_INPUT_FILE_SM]
+                   [--report_filename REPORT_FILENAME] [--chart_data_filename CHART_DATA_FILENAME]
+                   [--chart_data_varname CHART_DATA_VARNAME]
 
 Async HTTP Requester
 
@@ -64,6 +64,6 @@ options:
                         Filename to write report to
   --chart_data_filename CHART_DATA_FILENAME
                         Filename to write chart data to
-  --chart_rps_data_filename CHART_RPS_DATA_FILENAME
-                        Filename to write chart rps data to
+  --chart_data_varname CHART_DATA_VARNAME
+                        Var name to assign chart data to
 ```
