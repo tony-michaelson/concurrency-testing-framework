@@ -36,7 +36,7 @@ parser.add_argument("--json_input_file_sm", type=str, default=DEFAULT_FILENAME_S
 
 parser.add_argument("--report_filename", type=str, default=DEFAULT_SUMMARY_FILENAME, help="Filename to write report to")
 parser.add_argument("--chart_data_filename", type=str, default=DEFAULT_CHART_DATA_FILENAME, help="Filename to write chart data to")
-parser.add_argument("--chart_rps_data_filename", type=str, default=DEFAULT_CHART_DATA_FILENAME, help="Filename to write chart rps data to")
+parser.add_argument("--chart_data_varname", type=str, default='unknown', help="Var name to assign chart data to")
 args = parser.parse_args()
 
 baseURL = args.baseURL
@@ -46,7 +46,7 @@ filename = args.json_input_file
 filename_sm = args.json_input_file_sm
 summary_filename = args.report_filename
 chart_data_filename = args.chart_data_filename
-chart_rps_data_filename = args.chart_rps_data_filename
+chart_data_varname = args.chart_data_varname
 
 def read_json(filename):
     with open(filename, "r") as f:
@@ -210,6 +210,23 @@ def generate_chart_data(test_batches_list, rps_data=False):
 
     return sort_datasets_alphabetically(chart_data)
 
+def update_results_data(data_name, chart_data, results_file):
+    if not os.path.exists(results_file):
+        with open(results_file, 'w') as newfile:
+            newfile.write("{}")
+
+    with open(results_file, 'r+') as file:
+        file.seek(0)
+        try:
+            results_json = json.load(file)
+        except json.JSONDecodeError:
+            results_json = {}
+
+        results_json[data_name] = chart_data
+        file.truncate(0)
+        file.seek(0)
+        file.write(json.dumps(results_json))
+
 async def main():
     master_report = []
     for concurrent_requests in range(concurrent_requests_begin, concurrent_requests_end + 1):
@@ -217,16 +234,11 @@ async def main():
        master_report.append(report)
 
     chart_data = generate_chart_data(master_report)
-    chart_rps_data = generate_chart_data(master_report, True)
 
     with open(summary_filename, "w") as f:
         f.write(json.dumps(master_report, indent=4))
 
-    with open(chart_data_filename, 'w') as chart_file:
-        json.dump(chart_data, chart_file, indent=4)
-
-    with open(chart_rps_data_filename, 'w') as chart_rps_file:
-        json.dump(chart_rps_data, chart_rps_file, indent=4)
+    update_results_data(chart_data_varname, chart_data, chart_data_filename)
 
 if __name__ == "__main__":
     asyncio.run(main())
