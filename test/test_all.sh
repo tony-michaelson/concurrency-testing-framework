@@ -17,9 +17,9 @@ docker run -it --rm \
     python3 requests.py \
     --concurrent_requests_begin=1 \
     --report_filename=./results/summary-${FILE_NAME}.json \
-    --chart_data_filename=./results/chart_data_${FILE_NAME}.json \
-    --chart_rps_data_filename=./results/chart_rps_data_${FILE_NAME}.json \
-    --concurrent_requests_end=20
+    --chart_data_varname=${FILE_NAME} \
+    --chart_data_filename=./results/test-results.json \
+    --concurrent_requests_end=15
 
 FILE_NAME="${SYSTEM_NAME}_no_lg_input"
 docker run -it --rm \
@@ -31,10 +31,10 @@ docker run -it --rm \
     python3 requests.py \
     --concurrent_requests_begin=1 \
     --report_filename=./results/summary-${FILE_NAME}.json \
-    --chart_data_filename=./results/chart_data_${FILE_NAME}.json \
-    --chart_rps_data_filename=./results/chart_rps_data_${FILE_NAME}.json \
+    --chart_data_varname=${FILE_NAME} \
+    --chart_data_filename=./results/test-results.json \
     --input_requests_lg=0 \
-    --concurrent_requests_end=20
+    --concurrent_requests_end=15
 
 FILE_NAME="${SYSTEM_NAME}_no_lg_input_no_cpu"
 docker run -it --rm \
@@ -46,8 +46,8 @@ docker run -it --rm \
     python3 requests.py \
     --concurrent_requests_begin=1 \
     --report_filename=./results/summary-${FILE_NAME}.json \
-    --chart_data_filename=./results/chart_data_${FILE_NAME}.json \
-    --chart_rps_data_filename=./results/chart_rps_data_${FILE_NAME}.json \
+    --chart_data_varname=${FILE_NAME} \
+    --chart_data_filename=./results/test-results.json \
     --input_requests_lg=0 \
     --cpu_requests=0 \
     --concurrent_requests_end=40
