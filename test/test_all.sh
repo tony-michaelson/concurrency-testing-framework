@@ -51,3 +51,20 @@ docker run -it --rm \
     --input_requests_lg=0 \
     --cpu_requests=0 \
     --concurrent_requests_end=40
+
+FILE_NAME="${SYSTEM_NAME}_simple"
+docker run -it --rm \
+    --network="host" \
+    -e HOSTNAME=localhost \
+    -v"$(pwd):/app/" \
+    -w /app/ \
+    py_requests_tester \
+    python3 requests.py \
+    --concurrent_requests_begin=1 \
+    --report_filename=./results/summary-${FILE_NAME}.json \
+    --chart_data_varname=${FILE_NAME} \
+    --chart_data_filename=./results/test-results.json \
+    --input_requests_lg=0 \
+    --cpu_requests=0 \
+    --consume_requests=0 \
+    --concurrent_requests_end=200
