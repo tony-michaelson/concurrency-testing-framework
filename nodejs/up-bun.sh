@@ -1,0 +1,1 @@
+./up.sh "oven/bun:latest" "bun run /app/server.js"
